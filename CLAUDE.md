@@ -74,7 +74,11 @@ A live, auto-updating public dashboard tracking the **all-in cost of shelter for
 - Compliance: once a bank offer is accepted, disclose the project; avoid specific stock recommendations in commentary
 - Backlog ideas: threshold alerts, "best value metros" ranking, climate/insurance risk overlay, 12-month rent forecast
 
-## Current status
-- Installed: R 4.5.1, RStudio, Git 2.39. **Missing: Quarto.**
-- Not yet: GitHub account confirmed, API keys (FRED, EIA, Census), git repo init
-- Next: Week 1 — competitive scan, then setup and first FRED pull
+## Current status (updated 2026-10-20)
+- Installed: R 4.5.1, RStudio, Git 2.39, R pkgs `fredr`, `httr2`, `usethis`. **Missing: Quarto** (needed by Week 4).
+- GitHub: repo `finnmitty725/priced-out` (public), pushes via PAT stored with `gitcreds`. RStudio project `priced-out.Rproj`.
+- API keys: FRED ✅ in `~/.Renviron`. **EIA, Census: not yet** (needed Weeks 2–5).
+- Week 1 done: competitive scan (`notes/competitive-scan.md`), git repo, first FRED pull (`R/01_fred_pull.R` → `data/processed/fred_rates.csv`, MORTGAGE30US + DGS10 since 2000).
+- Key scan finding: break-even mortgage rate is **not novel as a concept** (Zillow one-off, July 2025). Framing decision pending.
+- Open: frequency alignment for mortgage–Treasury spread (weekly vs daily) — user to decide by Week 6.
+- Next: Week 2 — housing pipeline (Zillow ZHVI/ZORI, Redfin); get EIA + Census keys; install Quarto.
