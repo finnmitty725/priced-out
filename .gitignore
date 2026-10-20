@@ -1,0 +1,22 @@
+# --- Secrets: NEVER commit ---
+.Renviron
+.env
+*.env
+
+# --- R / RStudio ---
+.Rhistory
+.RData
+.Rproj.user/
+.Rapp.history
+
+# --- Raw downloads (large, re-creatable by the pipeline) ---
+data/raw/*
+!data/raw/.gitkeep
+
+# --- Quarto build output ---
+/.quarto/
+dashboard/_site/
+dashboard/*_files/
+
+# --- macOS ---
+.DS_Store
