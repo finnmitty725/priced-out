@@ -9,6 +9,7 @@ if (Sys.getenv("FRED_API_KEY") == "") {
   stop("FRED_API_KEY is not set. Add it to ~/.Renviron and restart R.")
 }
 series <- c(
+  DFF          = "fed_funds",      # Effective federal funds rate, daily    
   MORTGAGE30US = "mortgage_30y",   # Freddie Mac PMMS, weekly (Thursdays)
   DGS10        = "treasury_10y"    # 10-yr constant-maturity Treasury, daily
 )
