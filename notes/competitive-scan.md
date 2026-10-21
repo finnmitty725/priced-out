@@ -23,6 +23,7 @@ Goal: check whether the differentiators in CLAUDE.md hold up, especially whether
 | **Harvard JCHS** | Metro maps (periodic) | Has done renters aged 25–34 (2013) and 25th/75th pct | Varies | P&I, tax, insurance | Annual / periodic | Not live; editions vary |
 | **Pew (June 2026)** | Metro | Households headed by someone **under 40** | JCHS method | Price-to-income | One-off | Young lens exists but static |
 | **USD Burnham-Moores HAI** | **385 metros**, quarterly | **Renter** and owner income | — | P&I, tax, insurance, **utilities**, maintenance | Quarterly | Closest competitor on "all-in" + renters. No age lens, no rate solve |
+| **Redfin Housing Affordability Tracker** (found 2026-10-20) | National + metros | Median household | 15% default, **user-selectable** | P&I, property tax, insurance (0.5%), PMI. No utilities | Quarterly (next: Oct 29, 2026) | Closest to our personalization + payment-to-income + years-to-save-down-payment. No age lens, no energy, **no rate solve** |
 | **NerdWallet FTB report** (2020–24) | Large metros | ACS householders **25–44** | — | Price/income | Quarterly, appears discontinued | Young-ish lens, no rate solve |
 
 ## How each differentiator holds up
@@ -30,7 +31,7 @@ Goal: check whether the differentiators in CLAUDE.md hold up, especially whether
 1. **Young-adult lens (25–34, 5–10% down, renters)**: **Partly taken.** Pew (under 40), NerdWallet (25–44) and JCHS (renters aged 25–34, 2013) have all done one-off versions. Nobody runs it as a live monthly series by metro. → Still a real gap, but say "live," not "first."
 2. **All-in shelter cost (incl. energy)**: **Partly taken.** USD Burnham-Moores includes utilities for 385 metros quarterly, and Trulia did it once (2013 data). Nobody pairs it with *live* EIA prices or a separate energy breakdown. → Our angle is live energy prices plus an energy-market lens (data centers, gas), not just "includes utilities."
 3. **Break-even mortgage rate**: **Not novel as a concept** (Zillow 2025). Still open: a **live, monthly** break-even rate per metro, computed for a **young earner at 5–10% down with PMI**, possibly an **all-in** version that includes energy. Zillow's figure assumed 20% down and household income, so young buyers' break-even rates are likely much lower, and often negative or infeasible.
-4. **Personalization ("where can I afford")**: Lots of calculators exist (Zillow, NerdWallet, bank tools), but few rank 100+ metros on all-in cost. Not unique alone; useful as a feature.
+4. **Personalization ("where can I afford")**: Lots of calculators exist (Zillow, NerdWallet, bank tools). **Redfin's Housing Affordability Tracker** already does metro-level required income with a down-payment selector and years-to-save, so this is **not unique**. Our version adds the age lens, all-in energy costs and the rate solve.
 5. **Markets lens**: No affordability tracker found that also shows the mortgage–Treasury spread, PJM capacity prices or homebuilder/utility equities. **Most distinctive part for a banking/markets audience.**
 
 ## Decisions for you to make (record in decisions.md)
@@ -50,6 +51,7 @@ Goal: check whether the differentiators in CLAUDE.md hold up, especially whether
 - Pew, young adults & metro affordability (June 2026): https://www.pewresearch.org/short-reads/2026/06/24/buying-a-home-has-gotten-harder-for-young-adults-in-most-us-metro-areas/
 - USD Burnham-Moores HAI: https://www.sandiego.edu/business/centers/burnham-moores-real-estate/news-media/housing-index.php
 - HousingWire on Burnham-Moores: https://www.housingwire.com/articles/all-in-homeownership-costs-renters-affordability/
+- Redfin Housing Affordability Tracker: https://www.redfin.com/news/data-center/housing-affordability-tracker/
 - NerdWallet FTB reports: https://www.nerdwallet.com/mortgages/studies/q12024-fthb-affordability
 
 Caveat: several numbers come from news coverage, not the original methodology PDFs. Before the methodology page (Week 8), read the Zillow, HOAM and Burnham-Moores originals yourself.
