@@ -77,8 +77,10 @@ A live, auto-updating public dashboard tracking the **all-in cost of shelter for
 ## Current status (updated 2026-10-20)
 - Installed: R 4.5.1, RStudio, Git 2.39, R pkgs `fredr`, `httr2`, `usethis`. **Missing: Quarto** (needed by Week 4).
 - GitHub: repo `finnmitty725/priced-out` (public), pushes via PAT stored with `gitcreds`. RStudio project `priced-out.Rproj`.
-- API keys: FRED ✅ in `~/.Renviron`. **EIA, Census: not yet** (needed Weeks 2–5).
-- Week 1 done: competitive scan (`notes/competitive-scan.md`), git repo, first FRED pull (`R/01_fred_pull.R` → `data/processed/fred_rates.csv`, MORTGAGE30US + DGS10 since 2000).
-- Key scan finding: break-even mortgage rate is **not novel as a concept** (Zillow one-off, July 2025). Framing decision pending.
-- Open: frequency alignment for mortgage–Treasury spread (weekly vs daily) — user to decide by Week 6.
-- Next: Week 2 — housing pipeline (Zillow ZHVI/ZORI, Redfin); get EIA + Census keys; install Quarto.
+- API keys: FRED ✅ in `~/.Renviron`. **EIA, Census: not yet** — Census needed for Week 3.
+- Week 1 ✅: competitive scan, git repo, `R/01_fred_pull.R` (MORTGAGE30US, DGS10, DFF since 2000).
+- Week 2 ✅ (done early, 2026-10-20): `R/02_zillow_pull.R` → `data/processed/zillow_metro.csv` (ZHVI bottom + mid tier, ZORI; 97 metros = Zillow SizeRank ≤ 100). Redfin deferred to Week 7 (downloads broke after May 2026 redesign).
+- Decisions made: break-even rate stays signature (cite Zillow 2025); bottom-tier headline + mid-tier comparison; top 100 metros. See `notes/decisions.md`.
+- Known data quirk: zhvi_mid has 2 fewer rows than zhvi_bottom (a metro gap) — handle in Week 3.
+- New competitor found: Redfin Housing Affordability Tracker (quarterly, metro, down-payment selector, no rate solve/age lens/energy).
+- Next: Week 3 — get Census key; decide income measure (ACS 25–34 earnings vs household), down payment, threshold, tax/insurance; build `R/03_census_income.R` and `R/04_metrics.R` (payment-to-income, down-payment years, break-even rate via `uniroot`).
