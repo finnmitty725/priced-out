@@ -51,5 +51,6 @@ write_csv(zillow, "data/processed/zillow_metro.csv")
 zillow |>
   group_by(series) |>
   summarise(metros = n_distinct(region_id), first = min(date),
-            last = max(date), n = n())
+            last = max(date), n = n())|>
+  print()
 

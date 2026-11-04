@@ -11,8 +11,9 @@ if (Sys.getenv("FRED_API_KEY") == "") {
 series <- c(
   DFF          = "fed_funds",      # Effective federal funds rate, daily    
   MORTGAGE30US = "mortgage_30y",   # Freddie Mac PMMS, weekly (Thursdays)
-  DGS10        = "treasury_10y"    # 10-yr constant-maturity Treasury, daily
-)
+  DGS10        = "treasury_10y",    # 10-yr constant-maturity Treasury, daily
+  CES0500000003 = "avg_hourly_earnings" #Average hourly earnings, private, monthly
+) 
 rates_raw <- lapply(names(series), function(id) {
   fredr(series_id = id, observation_start = as.Date("2000-01-01"))
 }) |>
@@ -25,4 +26,5 @@ write_csv(rates, "data/processed/fred_rates.csv")
 
 rates |>
   group_by(series) |>
-  summarise(first = min(date), last = max(date), n = n(), latest = last(value))
+  summarise(first = min(date), last = max(date), n = n(), latest = last(value))|>
+  print()
