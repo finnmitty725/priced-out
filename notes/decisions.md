@@ -11,14 +11,23 @@ One line per economic or design assumption, with your reasoning. Interviewers wi
 | 2026-10-20 | Home values: Zillow ZHVI bottom tier (0–33rd pct) as headline, mid tier (33–67th) for comparison | Mid only; bottom only; both | Young first-time buyers mostly buy starter homes; mid tier keeps us comparable to Zillow/HOAM/NAHB |
 | 2026-10-20 | Geography: top 100 metros by Zillow SizeRank (97 have data) | Top 100; top 150–200 | Covers ~2/3 of US population; income/energy data thinner for small metros; can expand later |
 | 2026-10-20 | Defer Redfin to Week 7; MVP housing data = Zillow only | Defer; use stale June 2026 files; drop | Redfin's May 2026 Data Center redesign broke scriptable downloads (old S3 files frozen since June); MVP affordability math needs price, rent, rates, income only |
+| 2026-11-04 | Income: ACS renter household median income (B25119_003) as headline; householder 25–44 median household income (B19049_003) as comparison | 25–44 only; renter only; 25–44 headline; renter headline | Each is biased in opposite directions (25–44 includes owners, dual earners, peak-earning 40s → too high; renters of all ages → too low). Showing both bounds the true young-renter figure, which matters for credibility and usefulness to the target audience. Upgrade path: ACS PUMS renters aged 25–34 (Week 7+) |
+| 2026-11-04 | Down payment: 10% default; user slider later | 5%; 10%; user choice | Typical first-time buyer puts ~9–10% down; slider serves personalization feature |
+| 2026-11-04 | Affordability threshold: 30% of gross income | 30%; 28/36 lender rule | Standard used by HUD, Atlanta Fed, Zillow, Redfin → comparable |
+| 2026-11-04 | Property tax: metro effective rate = ACS median real estate taxes (B25103) ÷ median home value (B25077) | Flat ~1.1%; metro ACS rate | Rates vary ~5× across metros (Phoenix ~0.4%, Chicago ~2%) |
+| 2026-11-04 | Insurance: metro median annual premium from ACS B25141 (mortgaged units), estimated from brackets | Flat 0.5% of value (Redfin); metro ACS | 'All-in' cost is a differentiator; premiums vary widely (climate risk) |
+| 2026-11-04 | PMI: 0.6% of loan per year (flat) | 0.5%; 0.6%; 1% | Mid-range for ~10% down, decent credit; varies little by metro |
+| 2026-11-04 | Scale 2024 ACS incomes to current month by FRED average hourly earnings growth (CES0500000003) | Leave as 2024; scale by wage growth | Avoid comparing 2026 prices to 2024 pay (Atlanta Fed also projects incomes) |
+| 2026-11-04 | Plan: interactive sliders (down payment, savings, income) via Quarto Observable JS, Weeks 6–7 | Static only; Shiny; Quarto OJS | Runs in browser, free on GitHub Pages, no server |
 
 ## Open decisions (to settle in Weeks 2–3)
 - [x] Break-even framing → keep as signature, cite Zillow (2026-10-20)
 - [ ] Mortgage–Treasury spread frequency alignment (weekly vs daily) — by Week 6
 - [ ] Display for metros unaffordable at any rate (n/a, negative, or required price cut)
-- [ ] Income measure: ACS median earnings ages 25–34? Renter household income? Both?
-- [ ] Down payment assumption: 5%, 10%, or let user choose?
-- [ ] Affordability threshold: 30% of income (standard) or 28%/36% lender rules?
+- [x] Income → renter HH headline + 25–44 HH comparison (2026-11-04)
+- [x] Income vintage → scale by avg hourly earnings growth
+- [x] Down payment → 10% default + slider later
+- [x] Threshold → 30% gross
 - [x] Geography → top 100 by Zillow SizeRank (2026-10-20)
 - [x] Home value series → bottom tier headline + mid tier comparison (2026-10-20)
-- [ ] How to estimate insurance and property tax by metro?
+- [x] Tax + insurance → ACS metro values
