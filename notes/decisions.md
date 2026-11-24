@@ -19,8 +19,19 @@ One line per economic or design assumption, with your reasoning. Interviewers wi
 | 2026-11-04 | PMI: 0.6% of loan per year (flat) | 0.5%; 0.6%; 1% | Mid-range for ~10% down, decent credit; varies little by metro |
 | 2026-11-04 | Scale 2024 ACS incomes to current month by FRED average hourly earnings growth (CES0500000003) | Leave as 2024; scale by wage growth | Avoid comparing 2026 prices to 2024 pay (Atlanta Fed also projects incomes) |
 | 2026-11-04 | Plan: interactive sliders (down payment, savings, income) via Quarto Observable JS, Weeks 6–7 | Static only; Shiny; Quarto OJS | Runs in browser, free on GitHub Pages, no server |
+| 2026-11-24 | **Audience pivot:** recent college grads / young people (~22–27) choosing which big metro to move to (not graduate students) | All young adults 25–34; recent grads | Clear audience with a real decision (which city, which offer); strong distribution via campus/LinkedIn; graduation-season timing |
+| 2026-11-24 | **Primary lens: renting** (rent + utilities as share of entry-level pay); buying/break-even rate becomes secondary 'path to owning' section | Rent-first; buy-first | Recent grads overwhelmingly rent; ownership is a 5–10 yr goal |
+| 2026-11-24 | **Income (supersedes 2026-11-04 renter/25–44 choice):** metro median earnings of bachelor's holders (ACS B20004_005) × national entry-level ratio from ACS PUMS, plus a user salary input | Bachelor's as-is; adjusted; salary input only | Individual (not household) earnings of degree holders match a grad far better; adjustment removes older workers; input lets users use their actual offer |
+| 2026-11-24 | Entry-level ratio = 0.79 (full-time year-round bachelor's 22–27 median $55k ÷ all-earner bachelor's 25+ median $70k, ACS PUMS 2024 national) | 0.79 full-time; 0.61 all earners | Describes a grad taking a full-time offer; national $55k consistent with NY Fed early-career range. Limitation: assumes same ratio in every metro |
+| 2026-11-24 | Keep 'path to owning' section (break-even rate, years to save) as secondary | Keep; drop | Only genuinely novel metric; markets/rates story; already built |
+| 2026-11-24 | Savings rate for years-to-save: 10% of pay per year (user-adjustable later) | 5%; 10%; 15% | Realistic for a budgeting grad; Redfin uses 5% (more conservative) |
+| 2026-11-24 | Rent shown solo (headline) and with 1 roommate (rent ÷ 2) | Solo; shared; both | Solo is clean and conservative; sharing is common for grads in big metros |
 
-## Open decisions (to settle in Weeks 2–3)
+## Open decisions
+- [x] Entry-level ratio → 0.79
+- [x] Path to owning → keep
+- [x] Savings rate → 10%
+- [x] Rent → solo + 1 roommate
 - [x] Break-even framing → keep as signature, cite Zillow (2026-10-20)
 - [ ] Mortgage–Treasury spread frequency alignment (weekly vs daily) — by Week 6
 - [ ] Display for metros unaffordable at any rate (n/a, negative, or required price cut)

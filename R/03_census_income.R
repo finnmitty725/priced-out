@@ -12,12 +12,13 @@ if (census_key == "") {
   stop("CENSUS_API_KEY is not set. Add it to ~/.Renviron and restart R.")
 }
 
-acs_year <- 2024   # latest ACS 1-yesar release; bump when Census publishes a new one
+acs_year <- 2024   # latest ACS 1-year release; bump when Census publishes a new one
 
 # --- 1. Which Census variables we want -------------------------------------
 vars <- c(
-  B25119_003E = "income_renter",      # median household income, renters (headline)
-  B19049_003E = "income_hh_25_44",    # median household income, householder 25-44 (comparison)
+  B20004_005E = "earnings_bachelors", # median earnings, bachelor's degree holders 25+ (individual)
+  B25119_003E = "income_renter",      # median household income, renters (kept for reference)
+  B19049_003E = "income_hh_25_44",    # median household income, householder 25-44 (kept for reference)
   B25103_001E = "median_re_tax",      # median real estate taxes paid
   B25077_001E = "median_home_value"   # median home value (owner-occupied)
 )
@@ -62,12 +63,38 @@ acs <- acs |>
     census_name = NAME,
     match_key   = paste0(sub("[-,/].*$", "", NAME), ", ",
                          substr(sub("^[^,]*, ", "", NAME), 1, 2)),
+    earnings_bachelors,
     income_renter,
     income_hh_25_44,
     tax_rate = median_re_tax / median_home_value,
     insurance_annual,
     acs_year = acs_year
   )
+
+# --- 4b. Entry-level ratio from microdata (ACS PUMS, national) --------------
+# Median full-time pay of bachelor's holders aged 22-27, divided by the
+# median pay of ALL bachelor's holders 25+ (same definition as B20004 above)
+get_pums <- function(ages) {
+  resp <- request(paste0("https://api.census.gov/data/", acs_year, "/acs/acs1/pums")) |>
+    req_url_query(get = "PERNP,PWGTP,WKHP,WKWN", SCHL = 21, AGEP = ages, key = census_key) |>
+    req_perform() |>
+    resp_body_json(simplifyVector = TRUE)
+  people <- as_tibble(resp[-1, ], .name_repair = "minimal")
+  names(people) <- resp[1, ]
+  people |> mutate(across(everything(), as.numeric)) |> filter(PERNP > 0)
+}
+
+weighted_median <- function(x, w) {
+  o <- order(x)
+  x[o][which(cumsum(w[o]) >= sum(w) / 2)[1]]
+}
+
+young <- get_pums("22:27") |> filter(WKHP >= 35, WKWN >= 50)   # full-time, year-round
+older <- get_pums("25:99")                                     # all earners, like B20004
+entry_ratio <- weighted_median(young$PERNP, young$PWGTP) /
+               weighted_median(older$PERNP, older$PWGTP)
+
+acs <- acs |> mutate(entry_ratio = entry_ratio)
 
 # --- 5. Keep only our Zillow metros and check every one matched --------------
 zillow_metros <- read_csv("data/processed/zillow_metro.csv", show_col_types = FALSE) |>
@@ -85,6 +112,9 @@ write_csv(census_metro, "data/processed/census_metro.csv")
 
 census_metro |>
   summarise(metros = n(), matched = sum(!is.na(census_name)),
-            median_renter_income = median(income_renter, na.rm = TRUE),
+            entry_ratio = first(entry_ratio),
+            median_grad_earnings = median(earnings_bachelors, na.rm = TRUE),
             median_tax_rate = median(tax_rate, na.rm = TRUE),
-            median_insurance = median(insurance_annual, na.rm = TRUE))
+            median_insurance = median(insurance_annual, na.rm = TRUE)) |>
+  print(width = Inf)
+

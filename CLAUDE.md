@@ -1,9 +1,11 @@
 # Priced Out — Project Playbook
 
 ## What this is
-A live, auto-updating public dashboard tracking the **all-in cost of shelter for young Americans** (housing + energy + insurance) across 100+ US metros, plus a monthly analyst note ("The Priced Out Report").
+A live, auto-updating public dashboard showing **recent college grads / young people (~22–27) choosing a big metro** what shelter really costs on an entry-level salary (rent + energy, and the path to owning), across 97 US metros, plus a monthly analyst note ("The Priced Out Report").
 
-**One-line pitch:** A live tracker of the all-in cost of shelter for young Americans — housing, energy, and insurance — with a forward-looking "break-even mortgage rate" for every city.
+**One-line pitch:** A live tracker of what it really costs a new grad to live in each big US city — rent and utilities on an entry-level salary — plus a "break-even mortgage rate" showing when (if ever) they could buy there.
+
+*(Audience pivoted 2026-11-24 from "young Americans 25–34, ownership-first" to "recent grads, rent-first" — see notes/decisions.md.)*
 
 ## Who I'm working with
 - Economics major; career target is **banking & markets** (S&T / macro / rates / energy / RE coverage most aligned)
@@ -23,7 +25,7 @@ A live, auto-updating public dashboard tracking the **all-in cost of shelter for
 - README should state the project was built with AI-assisted development.
 
 ## Differentiators (vs. Atlanta Fed HOAM, NAR HAI, Zillow/Redfin, Harvard JCHS, NAHB)
-1. **Young-adult lens:** income for ages 25–34, realistic 5–10% down + PMI, includes renters
+1. **New-grad lens:** entry-level pay (metro bachelor's median × PUMS entry ratio 0.79), rent solo vs with roommate, 10% down + PMI
 2. **All-in shelter cost:** rent/mortgage + electricity + heating + insurance + property tax
 3. **Signature metric — Break-even mortgage rate:** rate at which a typical young earner could afford the median home in each metro (verify novelty in Week 1)
 4. **Personalization:** "Where can I afford?" — input salary/savings, ranks metros
@@ -74,13 +76,10 @@ A live, auto-updating public dashboard tracking the **all-in cost of shelter for
 - Compliance: once a bank offer is accepted, disclose the project; avoid specific stock recommendations in commentary
 - Backlog ideas: threshold alerts, "best value metros" ranking, climate/insurance risk overlay, 12-month rent forecast
 
-## Current status (updated 2026-10-20)
-- Installed: R 4.5.1, RStudio, Git 2.39, R pkgs `fredr`, `httr2`, `usethis`. **Missing: Quarto** (needed by Week 4).
-- GitHub: repo `finnmitty725/priced-out` (public), pushes via PAT stored with `gitcreds`. RStudio project `priced-out.Rproj`.
-- API keys: FRED ✅ in `~/.Renviron`. **EIA, Census: not yet** — Census needed for Week 3.
-- Week 1 ✅: competitive scan, git repo, `R/01_fred_pull.R` (MORTGAGE30US, DGS10, DFF since 2000).
-- Week 2 ✅ (done early, 2026-10-20): `R/02_zillow_pull.R` → `data/processed/zillow_metro.csv` (ZHVI bottom + mid tier, ZORI; 97 metros = Zillow SizeRank ≤ 100). Redfin deferred to Week 7 (downloads broke after May 2026 redesign).
-- Decisions made: break-even rate stays signature (cite Zillow 2025); bottom-tier headline + mid-tier comparison; top 100 metros. See `notes/decisions.md`.
-- Known data quirk: zhvi_mid has 2 fewer rows than zhvi_bottom (a metro gap) — handle in Week 3.
-- New competitor found: Redfin Housing Affordability Tracker (quarterly, metro, down-payment selector, no rate solve/age lens/energy).
-- Next: Week 3 — get Census key; decide income measure (ACS 25–34 earnings vs household), down payment, threshold, tax/insurance; build `R/03_census_income.R` and `R/04_metrics.R` (payment-to-income, down-payment years, break-even rate via `uniroot`).
+## Current status (updated 2026-11-24)
+- **Behind schedule:** calendar = Week 6; MVP (due Week 4) not live yet. Replan agreed in principle: Wk6 metrics + MVP dashboard live; Wk7 GitHub Actions + energy (electricity); Wk8 markets panel + methodology + first report; Wk9 launch. Deferred past Dec 19: full sliders, Redfin, PJM, equities.
+- Installed: R 4.5.1, RStudio, Git, Quarto ✅, R pkgs `fredr`, `httr2`, `usethis`. Keys: FRED ✅ Census ✅ **EIA not yet** (Week 7).
+- Pipeline ✅: `01_fred_pull.R` (MORTGAGE30US, DGS10, DFF, CES0500000003), `02_zillow_pull.R` (ZHVI bottom/mid, ZORI; 97 metros), `03_census_income.R` (bachelor's earnings B20004, renter/25–44 income for reference, tax rate, insurance grouped median, PUMS entry ratio), `04_metrics.R` → `data/processed/metrics_latest.csv` (grad pay, rent share solo/shared, starter-home own cost, years to save, break-even rate; self-check via stopifnot).
+- First grad results (Nov 2026): median grad pay $58.3k; median solo rent 35% of pay; 13/97 metros rent-affordable solo; median break-even rate 4.26% vs 7.24%; 13 metros never affordable to buy.
+- Known caveats: starter-home vs typical-rent comparison mismatch; New Orleans insurance top-coded ($4k+); Prop 13 understates CA tax for new buyers; insurance $ from typical homes overstates for starter homes.
+- Next: commit; build `dashboard/` Quarto MVP (rankings table + metro detail + salary input box) and publish to GitHub Pages.
