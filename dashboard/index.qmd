@@ -1,0 +1,228 @@
+---
+title: "Priced Out"
+subtitle: "What it really costs a new grad to live in America's big cities"
+format:
+  dashboard:
+    orientation: rows
+    theme: cosmo
+    nav-buttons:
+      - icon: github
+        href: https://github.com/finnmitty725/priced-out
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| include: false
+library(dplyr)
+library(readr)
+library(scales)
+
+m <- read_csv("../data/processed/metrics_latest.csv", show_col_types = FALSE)
+
+# Headline numbers
+mortgage_rate   <- first(m$mortgage_rate)
+rate_date       <- first(m$rate_date)
+zillow_date     <- first(m$zillow_date)
+median_pay      <- median(m$grad_pay)
+median_rent_pct <- median(m$rent_share_solo, na.rm = TRUE)
+n_rent_ok       <- sum(m$rent_share_solo <= 0.30, na.rm = TRUE)
+median_be       <- median(m$break_even, na.rm = TRUE)
+n_never         <- sum(is.na(m$break_even))
+median_years    <- median(m$years_to_save)
+
+# Hand the table to the browser-side (OJS) code
+ojs_define(metrics = m, mortgage_rate = mortgage_rate)
+```
+
+# Renting
+
+## Row {height=22%}
+
+```{r}
+#| content: valuebox
+#| title: "Typical new-grad pay"
+list(value = dollar(median_pay, accuracy = 100), icon = "briefcase", color = "primary")
+```
+
+```{r}
+#| content: valuebox
+#| title: "Share of pay to rent alone"
+list(value = percent(median_rent_pct, accuracy = 1), icon = "house-door",
+     color = if (median_rent_pct > 0.30) "danger" else "success")
+```
+
+```{r}
+#| content: valuebox
+#| title: "Cities where renting alone fits the 30% rule"
+list(value = paste(n_rent_ok, "of", nrow(m)), icon = "geo-alt", color = "warning")
+```
+
+## Row
+
+### Column {width=28%}
+
+::: {.card title="Use your own salary"}
+By default each city uses the **typical full-time pay of a new bachelor's grad there**. Got an offer? Switch to your salary and every city recalculates.
+
+```{ojs}
+viewof mode = Inputs.radio(["Typical new-grad pay in each city", "My salary"],
+  {value: "Typical new-grad pay in each city"})
+viewof my_salary = Inputs.number([10000, 500000],
+  {value: 60000, step: 1000, label: "My salary ($/yr)", disabled: mode !== "My salary"})
+viewof search = Inputs.search(rows, {placeholder: "Find a city…"})
+```
+
+**How to read it:** housing is usually called *affordable* when it takes **30% or less** of gross pay. "With roommate" splits a typical unit's rent in half.
+:::
+
+### Column
+
+```{ojs}
+//| title: "Rent as a share of pay, 97 largest metros"
+rows = transpose(metrics).map(d => {
+  const pay = mode === "My salary" ? my_salary : d.grad_pay;
+  return {
+    City: d.metro,
+    Pay: pay,
+    "Rent (alone)": d.rent_solo,
+    "% of pay (alone)": d.rent_solo * 12 / pay,
+    "% of pay (w/ roommate)": d.rent_shared * 12 / pay,
+    "Pay needed to rent alone": d.pay_needed_solo,
+    Verdict: d.rent_solo * 12 / pay <= 0.30 ? "✅ Fits alone"
+           : d.rent_shared * 12 / pay <= 0.30 ? "🟡 Needs a roommate"
+           : "🔴 Tight even shared"
+  };
+})
+
+usd = d3.format("$,.0f")
+pct = d3.format(".0%")
+
+Inputs.table(search, {
+  sort: "% of pay (alone)",
+  rows: 25,
+  format: {
+    Pay: usd,
+    "Rent (alone)": d => usd(d) + "/mo",
+    "% of pay (alone)": pct,
+    "% of pay (w/ roommate)": pct,
+    "Pay needed to rent alone": usd
+  }
+})
+```
+
+# Path to owning
+
+## Row {height=22%}
+
+```{r}
+#| content: valuebox
+#| title: "30-year mortgage rate today"
+list(value = percent(mortgage_rate, accuracy = 0.01), icon = "bank", color = "secondary")
+```
+
+```{r}
+#| content: valuebox
+#| title: "Break-even rate (median city)"
+list(value = percent(median_be, accuracy = 0.01), icon = "arrow-down-circle", color = "danger")
+```
+
+```{r}
+#| content: valuebox
+#| title: "Cities unaffordable at any rate"
+list(value = n_never, icon = "x-circle", color = "dark")
+```
+
+```{r}
+#| content: valuebox
+#| title: "Years to save 10% down (median)"
+list(value = round(median_years, 1), icon = "piggy-bank", color = "info")
+```
+
+## Row
+
+### Column {width=55%}
+
+```{ojs}
+//| title: "Break-even mortgage rate vs. today's rate"
+owning = transpose(metrics)
+  .filter(d => d.break_even !== null)
+  .sort((a, b) => b.break_even - a.break_even)
+
+Plot.plot({
+  marginLeft: 150,
+  height: Math.max(400, owning.length * 13),
+  x: {label: "Mortgage rate at which a typical new grad could afford a starter home →",
+      tickFormat: d => d3.format(".0%")(d), grid: true},
+  y: {label: null, domain: owning.map(d => d.metro)},
+  marks: [
+    Plot.ruleX([mortgage_rate], {stroke: "#d62828", strokeWidth: 2}),
+    Plot.text([mortgage_rate], {x: d => d, frameAnchor: "top", dy: -2,
+      text: d => `Today: ${d3.format(".2%")(d)}`, fill: "#d62828"}),
+    Plot.dot(owning, {x: "break_even", y: "metro",
+      fill: d => d.break_even >= mortgage_rate ? "#2a9d8f" : "#e76f51", r: 4,
+      tip: true, title: d => `${d.metro}\nBreak-even: ${d3.format(".2%")(d.break_even)}`})
+  ]
+})
+```
+
+### Column
+
+```{ojs}
+//| title: "Starter homes: what it takes, by city"
+Inputs.table(transpose(metrics).map(d => ({
+  City: d.metro,
+  "Starter home": d.starter_price,
+  "Monthly cost": d.own_cost,
+  "% of grad pay": d.own_share,
+  "Years to save 10%": d.years_to_save,
+  "Break-even rate": d.break_even
+})), {
+  sort: "Break-even rate",
+  reverse: true,
+  format: {
+    "Starter home": d3.format("$,.0f"),
+    "Monthly cost": d => d3.format("$,.0f")(d) + "/mo",
+    "% of grad pay": d3.format(".0%"),
+    "Years to save 10%": d3.format(".1f"),
+    "Break-even rate": d => d === null ? "Never (even at 0%)" : d3.format(".2%")(d)
+  }
+})
+```
+
+# About
+
+::: {.card}
+## What this is
+**Priced Out** shows recent college grads what it really costs to live in each of America's 97 largest metro areas on an entry-level salary, and whether they could ever buy a home there. It updates as new data is released.
+
+## The signature number: the break-even mortgage rate
+For each city, the mortgage rate at which a typical new grad's **total** monthly cost of a starter home (mortgage + property tax + insurance + PMI) equals **30% of their pay**. If it's above today's rate, buying fits the budget now. If it's "never," even a 0% mortgage wouldn't be enough: the problem is price, not rates. This builds on [Zillow's 2025 analysis](https://www.zillow.com/research/rate-drops-35389/), rebuilt live for new grads with 10% down instead of 20%.
+
+## Key assumptions
+| Assumption | Value | Source |
+|---|---|---|
+| New-grad pay | Metro median earnings of bachelor's holders × 0.79 | ACS 2024 (B20004); ratio from ACS PUMS: full-time grads 22–27 vs all grads 25+ |
+| Pay brought to today | × growth in average hourly earnings since 2024 | FRED (CES0500000003) |
+| Rent | Typical rent, all units (smoothed, seasonally adjusted) | Zillow ZORI |
+| Starter home price | Typical value of the cheapest third of homes | Zillow ZHVI bottom tier |
+| Mortgage rate | 30-year fixed, weekly | Freddie Mac via FRED |
+| Affordable | Housing ≤ 30% of gross pay | HUD standard |
+| Down payment / PMI | 10% down; PMI 0.6% of loan per year | Assumption |
+| Property tax | Metro median taxes ÷ median home value | ACS 2024 (B25103, B25077) |
+| Insurance | Metro median premium, estimated from brackets | ACS 2024 (B25141) |
+| Savings | 10% of pay per year toward a down payment | Assumption |
+
+## Known limitations
+- Starter-home prices are compared with **typical** rents (all units), which flatters buying relative to renting.
+- New-grad pay assumes young grads earn the same share of the local grad median in every city.
+- California property taxes are understated for new buyers (Prop 13); New Orleans insurance is top-coded at $4,000+.
+- Utilities and energy costs are not yet included (coming soon).
+
+## Data as of
+Mortgage rate: `{r} format(rate_date, "%b %d, %Y")` · Zillow: `{r} format(zillow_date, "%B %Y")` · Census: ACS 2024
+
+*Built by an economics student with AI-assisted development. Code and full decision log on [GitHub](https://github.com/finnmitty725/priced-out). Not financial advice.*
+:::
